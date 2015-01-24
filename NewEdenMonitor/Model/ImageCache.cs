@@ -109,7 +109,7 @@ namespace NewEdenMonitor.Model
             }
         }
 
-        public static async Task<byte[]> GetTypeIconDataAsync(long typeId, eZet.EveLib.EveXmlModule.Image.AllianceLogoSize size)
+        public static async Task<byte[]> GetTypeIconDataAsync(long typeId, eZet.EveLib.EveXmlModule.Image.TypeIconSize size)
         {
             const string type = "InventoryType";
 
