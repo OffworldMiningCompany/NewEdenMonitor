@@ -1,8 +1,11 @@
-﻿using eZet.EveLib.EveXmlModule;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using NewEdenMonitor.Annotations;
+using eZet.EveLib.EveXmlModule;
 using NewEdenMonitor.Data;
+using NewEdenMonitor.Model;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using Image = eZet.EveLib.EveXmlModule.Image;
 
 namespace NewEdenMonitor.UI
 {
@@ -30,14 +33,35 @@ namespace NewEdenMonitor.UI
         private async void GetImageAsync(DataAggregator dataAggregator, long characterId)
         {
             dataAggregator.CharacterImage =
-                await EveXml.Image.GetCharacterPortraitDataAsync(characterId, Image.CharacterPortraitSize.X128);
+                await ImageCache.GetCharacterPortraitDataAsync(characterId, eZet.EveLib.EveXmlModule.Image.CharacterPortraitSize.X128);
         }
 
-        internal class DataAggregator
+        internal class DataAggregator : INotifyPropertyChanged
         {
-            public byte[] CharacterImage { get; set; }
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            private byte[] _characterImage;
+
+            public byte[] CharacterImage
+            {
+                get { return _characterImage; }
+                set
+                {
+                    _characterImage = value;
+                    OnPropertyChanged();
+                }
+            }
+
             public CharacterInfoUpdater CharacterInfoUpdater { get; set; }
             public CharacterSheetUpdater CharacterSheetUpdater { get; set; }
+
+
+            [NotifyPropertyChangedInvocator]
+            private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+            {
+                PropertyChangedEventHandler handler = PropertyChanged;
+                if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

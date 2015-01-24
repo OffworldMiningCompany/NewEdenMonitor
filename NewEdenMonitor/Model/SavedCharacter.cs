@@ -12,7 +12,6 @@ namespace NewEdenMonitor.Model
         public string Name { get; set; }
         public int KeyId { get; set; }
         public string VerificationCode { get; set; }
-        public byte[] Portrait { get; set; }
     }
 
     internal class SavedCharacterHandler
@@ -30,7 +29,7 @@ namespace NewEdenMonitor.Model
 
             using (var command = _db.Connection.CreateCommand())
             {
-                command.CommandText = "SELECT character_id, name, key_id, verification_code, portrait FROM characters WHERE character_id = @character_id;";
+                command.CommandText = "SELECT character_id, name, key_id, verification_code FROM characters WHERE character_id = @character_id;";
                 var param = command.Parameters.Add("character_id", DbType.Int32);
                 param.Value = characterId;
 
@@ -59,7 +58,7 @@ namespace NewEdenMonitor.Model
 
             using (var command = _db.Connection.CreateCommand())
             {
-                command.CommandText = "SELECT character_id, name, key_id, verification_code, portrait FROM characters;";
+                command.CommandText = "SELECT character_id, name, key_id, verification_code FROM characters;";
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -76,11 +75,16 @@ namespace NewEdenMonitor.Model
             return savedCharacters;
         }
 
+        internal async Task<List<SavedCharacter>> GetAllAsync()
+        {
+            return await Task.Run(() => GetAll());
+        }
+
         internal bool Set(SavedCharacter savedCharacter)
         {
             using (var command = _db.Connection.CreateCommand())
             {
-                command.CommandText = "INSERT OR REPLACE INTO characters VALUES (@character_id, @name, @key_id, @verification_code, @portrait);";
+                command.CommandText = "INSERT OR REPLACE INTO characters VALUES (@character_id, @name, @key_id, @verification_code);";
 
                 var param = command.Parameters.Add("character_id", DbType.Int64);
                 param.Value = savedCharacter.CharacterId;
@@ -93,9 +97,6 @@ namespace NewEdenMonitor.Model
 
                 param = command.Parameters.Add("verification_code", DbType.String);
                 param.Value = savedCharacter.VerificationCode;
-
-                param = command.Parameters.Add("portrait", DbType.Binary);
-                param.Value = savedCharacter.Portrait;
 
                 int res = command.ExecuteNonQuery();
 
@@ -121,7 +122,6 @@ namespace NewEdenMonitor.Model
             savedCharacter.Name = reader["name"].ToString();
             savedCharacter.KeyId = reader["key_id"].ToInt32();
             savedCharacter.VerificationCode = reader["verification_code"].ToString();
-            savedCharacter.Portrait = reader["portrait"].ToByteArray();
 
             return savedCharacter;
         }

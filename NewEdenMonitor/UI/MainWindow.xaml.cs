@@ -100,7 +100,7 @@ namespace NewEdenMonitor.UI
                         _imageIndex = 1;
                     }
 
-                    SetBackgroundImage(_imageIndex);
+                    SetBackgroundImage();
 
                     break;
                 case Key.F11:
@@ -130,11 +130,11 @@ namespace NewEdenMonitor.UI
 
         #region Background Image
 
-        private void SetBackgroundImage(int index)
+        private void SetBackgroundImage()
         {
             var myBrush = new ImageBrush();
             var image = new Image();
-            image.Source = new BitmapImage(new Uri(Path.GetFullPath(_backgroundImages[index])));
+            image.Source = new BitmapImage(new Uri(Path.GetFullPath(_backgroundImages[_imageIndex])));
             myBrush.ImageSource = image.Source;
             MainWindowName.Background = myBrush;
         }
@@ -153,19 +153,18 @@ namespace NewEdenMonitor.UI
             {
                 var setting = db.SettingsHandler.Get("backgroundImage");
 
-                var myBrush = new ImageBrush();
-                var image = new Image();
-                image.Source = new BitmapImage(new Uri(Path.GetFullPath(setting.Value)));
-                myBrush.ImageSource = image.Source;
-                MainWindowName.Background = myBrush;
-
-                var index = _backgroundImages.IndexOf(setting.Value);
-
-                if (index >= 0)
+                if (setting != null)
                 {
-                    _imageIndex = index;
+                    _imageIndex = _backgroundImages.IndexOf(setting.Value);
                 }
             }
+
+            if (_imageIndex < 0)
+            {
+                _imageIndex = 1;
+            }
+
+            SetBackgroundImage();
         }
 
         #endregion

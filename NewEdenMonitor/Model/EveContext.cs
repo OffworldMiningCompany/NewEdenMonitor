@@ -22,6 +22,7 @@ namespace NewEdenMonitor.Model
 
         private readonly SQLiteConnection _connection;
         private ApiCacheHandler _apiCacheHandler;
+        private ImageHandler _imageHandler;
         private SavedCharacterHandler _savedCharacterHandler;
         private SettingsHandler _settingsHandler;
 
@@ -42,6 +43,11 @@ namespace NewEdenMonitor.Model
         internal ApiCacheHandler ApiCacheHandler
         {
             get { return _apiCacheHandler ?? (_apiCacheHandler = new ApiCacheHandler(this)); }
+        }
+
+        internal ImageHandler ImageHandler
+        {
+            get { return _imageHandler ?? (_imageHandler = new ImageHandler(this)); }
         }
 
         internal SavedCharacterHandler SavedCharacterHandler

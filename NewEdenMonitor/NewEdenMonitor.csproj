@@ -73,8 +73,9 @@
     <Compile Include="Data\CharacterSheetUpdater.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Model\Image.cs" />
+    <Compile Include="Model\ImageCache.cs" />
     <Compile Include="Model\Settings.cs" />
-    <Compile Include="MouseDoubleClick.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="UI\AddApiKeyWindow.xaml.cs">
       <DependentUpon>AddApiKeyWindow.xaml</DependentUpon>
@@ -172,7 +173,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
-    <EmbeddedResource Include="NewEdenMonitor.sqlite" />
+    <EmbeddedResource Include="Resources\NewEdenMonitor.sqlite" />
     <Resource Include="Resources\Play-Bold.ttf" />
     <Resource Include="Resources\Play-Regular.ttf" />
     <None Include="packages.config" />
