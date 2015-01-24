@@ -21,8 +21,9 @@ namespace NewEdenMonitor.Model
         bool _disposed = false;
 
         private readonly SQLiteConnection _connection;
-        private readonly ApiCacheHandler _apiCacheHandler;
-        private readonly SavedCharacterHandler _savedCharacterHandler;
+        private ApiCacheHandler _apiCacheHandler;
+        private SavedCharacterHandler _savedCharacterHandler;
+        private SettingsHandler _settingsHandler;
 
         internal EveContext()
         {
@@ -31,9 +32,6 @@ namespace NewEdenMonitor.Model
                     new SQLiteConnectionStringBuilder() {DataSource = Paths.DbFullPath, ForeignKeys = true}
                         .ConnectionString, true);
             _connection.Open();
-
-            _apiCacheHandler = new ApiCacheHandler(this);
-            _savedCharacterHandler = new SavedCharacterHandler(this);
         }
 
         internal SQLiteConnection Connection
@@ -43,12 +41,17 @@ namespace NewEdenMonitor.Model
 
         internal ApiCacheHandler ApiCacheHandler
         {
-            get { return _apiCacheHandler; }
+            get { return _apiCacheHandler ?? (_apiCacheHandler = new ApiCacheHandler(this)); }
         }
 
         internal SavedCharacterHandler SavedCharacterHandler
         {
-            get { return _savedCharacterHandler; }
+            get { return _savedCharacterHandler ?? (_savedCharacterHandler = new SavedCharacterHandler(this)); }
+        }
+
+        internal SettingsHandler SettingsHandler
+        {
+            get { return _settingsHandler ?? (_settingsHandler = new SettingsHandler(this)); }
         }
 
         public void Dispose()

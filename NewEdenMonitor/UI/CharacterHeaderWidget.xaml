@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="NewEdenMonitor.UI.CharacterHeaderWidget"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:newEdenMonitor="clr-namespace:NewEdenMonitor"
+             xmlns:newEdenMonitorUi="clr-namespace:NewEdenMonitor.UI"
+             mc:Ignorable="d" 
+             d:DesignHeight="128" d:DesignWidth="440">
+    <UserControl.Resources>
+        <newEdenMonitor:ThousandSepConverter x:Key="ThousandSepConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Image Source="{Binding CharacterImage}" HorizontalAlignment="Left" Width="128" Height="128" Margin="0,0,0,0" VerticalAlignment="Top" />
+        <Label Name="CharacterName" Content="{Binding CharacterInfoUpdater.CharacterInfo.CharacterName, FallbackValue='Character Name'}" HorizontalAlignment="Left" Margin="128,0,0,0" VerticalAlignment="Top" FontFamily="../Resources/#Play" FontSize="24" Foreground="White" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="128,28,0,0" >
+            <Label Content="{Binding CharacterSheetUpdater.CharacterSheet.Gender}" FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="5,5,0,5" />
+            <Label Content=" - " FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5" />
+            <Label Content="{Binding CharacterSheetUpdater.CharacterSheet.Race}" FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5" />
+            <Label Content=" - " FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5" />
+            <Label Content="{Binding CharacterSheetUpdater.CharacterSheet.Bloodline}" FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5" />
+            <Label Content=" - " FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5" />
+            <Label Content="{Binding CharacterSheetUpdater.CharacterSheet.Ancestry}" FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="128,46,0,0" >
+            <Label Content="Birthday: " FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="5,5,0,5" />
+            <Label Content="{Binding CharacterSheetUpdater.CharacterSheet.DateOfBirth}" FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="128,64,0,0" >
+            <Label Content="Security Status: " FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="5,5,0,5" />
+            <Label Content="{Binding CharacterInfoUpdater.CharacterInfo.SecurityStatus}" FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="128,82,0,0" >
+            <Label Content="Balance: " FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="5,5,0,5"/>
+            <Label Content="{Binding CharacterInfoUpdater.CharacterInfo.AccountBalance, Converter={StaticResource ThousandSepConverter}}" FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5"/>
+            <Label Content=" ISK" FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="128,100,0,0" >
+            <Label Content="Active Ship: " FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="5,5,0,5" />
+            <Label Content="{Binding CharacterInfoUpdater.CharacterInfo.ShipTypeName}" FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5" />
+            <Label Content=" (" FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5" />
+            <Label Content="{Binding CharacterInfoUpdater.CharacterInfo.ShipName}" FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5" />
+            <Label Content=")" FontFamily="../Resources/#Play" FontSize="16" Foreground="White" Padding="0,5,0,5" />
+        </StackPanel>
+        <!--<Label Content="Account Status: Active 2015-05-14 09:41:49" HorizontalAlignment="Left" Margin="0,128,0,0" VerticalAlignment="Top" FontFamily="../Resources/#Play" FontSize="16" Foreground="White"/>-->
+    </Grid>
+</UserControl>

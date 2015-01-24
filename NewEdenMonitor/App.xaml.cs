@@ -13,15 +13,12 @@ namespace NewEdenMonitor
     /// </summary>
     public partial class App : Application
     {
-        private static ServerStatusUpdater _serverStatusUpdater = new ServerStatusUpdater();
-        private static KillsUpdater _killsUpdater = new KillsUpdater();
-
         public App()
         {
             InitializeDatabase();
 
-            ((EveXmlRequestHandler)EveXml.Eve.RequestHandler).Cache = new SqliteCache();
-            ((EveXmlRequestHandler)EveXml.Map.RequestHandler).Cache = new SqliteCache();
+            ((EveXmlRequestHandler)EveXml.Eve.RequestHandler).Cache = SqliteCache.Instance;
+            ((EveXmlRequestHandler)EveXml.Map.RequestHandler).Cache = SqliteCache.Instance;
         }
 
         private void InitializeDatabase()

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using eZet.EveLib.EveXmlModule;
+using NewEdenMonitor.Model;
+using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,37 +18,69 @@ namespace NewEdenMonitor.UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<string> _backgroundImages = new List<string>();
         private int _imageIndex = 1;
+
+        readonly List<Control> _column1Controls = new List<Control>();
+        readonly List<Control> _column2Controls = new List<Control>();
+        List<Control> _column3Controls = new List<Control>();
+        List<Control> _column4Controls = new List<Control>();
 
         public MainWindow()
         {
             InitializeComponent();
+            InitializeImageList();
+            InitializeWidgets();
 
+            LoadBackgroundImage();
 
             KeyUp += OnKeyUp;
+        }
 
-            var list =  new List<Control>();
-            Contents.ItemsSource = list;
+        private void InitializeImageList()
+        {
+            _backgroundImages = Directory.EnumerateFiles("Images").Where(i => i.ToLower().EndsWith(".png")).ToList();
+        }
+
+        private void InitializeWidgets()
+        {
+            Column1.ItemsSource = _column1Controls;
 
             var serverStatusWidget = new ServerStatusWidget();
             serverStatusWidget.Margin = new Thickness(20, 20, 10, 10);
-            list.Add(serverStatusWidget);
+            _column1Controls.Add(serverStatusWidget);
 
             var playersOnlineWidget = new PlayersOnlineWidget();
             playersOnlineWidget.Margin = new Thickness(20, 10, 10, 10);
-            list.Add(playersOnlineWidget);
+            _column1Controls.Add(playersOnlineWidget);
 
             var totalKillsWidget = new TotalKillsWidget();
             totalKillsWidget.Margin = new Thickness(20, 10, 10, 10);
-            list.Add(totalKillsWidget);
-        }
+            _column1Controls.Add(totalKillsWidget);
 
-        public void CollectionChanged(Object source, NotifyCollectionChangedEventArgs e)
-        {
+            Column2.ItemsSource = _column2Controls;
+
+            using (var db = new EveContext())
+            {
+                var characters = db.SavedCharacterHandler.GetAll();
+
+                foreach (var character in characters)
+                {
+                    var characterKey = EveXml.CreateCharacterKey(character.KeyId, character.VerificationCode);
+                    //((EveXmlRequestHandler)characterKey.RequestHandler).Cache = SqliteCache.Instance;
+                    characterKey.InitAsync().Wait();
+
+                    var characterWidget = new CharacterWidget(characterKey, character.CharacterId);
+                    characterWidget.Margin = new Thickness(20, 20, 10, 10);
+                    _column2Controls.Add(characterWidget);
+                }
+            }
         }
 
         private void MenuItemAddCharacters_Click(object sender, RoutedEventArgs e)
         {
+            var addApiKeyWindow = new AddApiKeyWindow();
+            addApiKeyWindow.ShowDialog();
         }
 
         private void MenuItemExit_Click(object sender, RoutedEventArgs e)
@@ -58,20 +93,14 @@ namespace NewEdenMonitor.UI
             switch (e.Key)
             {
                 case Key.F4:
-                    var uriStr = string.Format("pack://application:,,,/Resources/bg{0}.png", _imageIndex);
-
-                    var myBrush = new ImageBrush();
-                    var image = new Image();
-                    image.Source = new BitmapImage(new Uri(uriStr));
-                    myBrush.ImageSource = image.Source;
-                    MainWindowName.Background = myBrush;
-
                     _imageIndex++;
 
-                    if (_imageIndex > 4)
+                    if (_imageIndex >= _backgroundImages.Count)
                     {
                         _imageIndex = 1;
                     }
+
+                    SetBackgroundImage(_imageIndex);
 
                     break;
                 case Key.F11:
@@ -93,5 +122,52 @@ namespace NewEdenMonitor.UI
                     break;
             }
         }
+
+        private void MainWindowName_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            SaveBackgroundImage(_backgroundImages[_imageIndex]);
+        }
+
+        #region Background Image
+
+        private void SetBackgroundImage(int index)
+        {
+            var myBrush = new ImageBrush();
+            var image = new Image();
+            image.Source = new BitmapImage(new Uri(Path.GetFullPath(_backgroundImages[index])));
+            myBrush.ImageSource = image.Source;
+            MainWindowName.Background = myBrush;
+        }
+
+        private static void SaveBackgroundImage(string str)
+        {
+            using (var db = new EveContext())
+            {
+                db.SettingsHandler.Set(new Setting { Key = "backgroundImage", Value = str });
+            }
+        }
+
+        private void LoadBackgroundImage()
+        {
+            using (var db = new EveContext())
+            {
+                var setting = db.SettingsHandler.Get("backgroundImage");
+
+                var myBrush = new ImageBrush();
+                var image = new Image();
+                image.Source = new BitmapImage(new Uri(Path.GetFullPath(setting.Value)));
+                myBrush.ImageSource = image.Source;
+                MainWindowName.Background = myBrush;
+
+                var index = _backgroundImages.IndexOf(setting.Value);
+
+                if (index >= 0)
+                {
+                    _imageIndex = index;
+                }
+            }
+        }
+
+        #endregion
     }
 }

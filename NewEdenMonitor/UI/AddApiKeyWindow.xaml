@@ -1,0 +1,29 @@
+﻿<Window x:Class="NewEdenMonitor.UI.AddApiKeyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Name="AddApiKey"
+        Title="Add API Key" Height="385" Width="649">
+    <Grid>
+        <GroupBox Header="Step 1: Load Characters" VerticalAlignment="Top" Margin="10,10,10,0" SnapsToDevicePixels="True" Height="132">
+            <Grid>
+                <Label Content="Key ID:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,8,0,0"  />
+                <TextBox Height="23" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="119,11,0,0" TextWrapping="Wrap"
+                         Text="{Binding KeyId, ElementName=AddApiKey, FallbackValue=4054125}" />
+                <Label Content="Verification Code:" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top"/>
+                <TextBox VerticalAlignment="Top" Margin="119,38,10,0" Height="23" TextWrapping="Wrap" 
+                         Text="{Binding VerificationCode, ElementName=AddApiKey, FallbackValue=KG3FOYXvf8EuhQwFvmc8E0zLKhGkMEOPE1YgcCNW9G5VxIYPRoAHWYki7FHicCd2}"/>
+                <Button Content="Load Characters" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,10" Width="106" Click="ButtonLoadCharacters_Click"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Step 2: Add Characters" HorizontalAlignment="Left" Margin="10,147,0,0" VerticalAlignment="Top" Width="197" Height="133">
+            <Grid>
+                <CheckBox Name="CheckBox1" Content="{Binding CharacterName1, ElementName=AddApiKey}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
+                <CheckBox Name="CheckBox2" Content="{Binding CharacterName2, ElementName=AddApiKey}" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
+                <CheckBox Name="CheckBox3" Content="{Binding CharacterName3, ElementName=AddApiKey}" HorizontalAlignment="Left" Margin="10,52,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
+                <Button Name="AddCharactersButton" Content="Add" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" IsEnabled="False" Click="ButtonAddCharacters_Click" RenderTransformOrigin="0.587,0.864"/>
+            </Grid>
+        </GroupBox>
+        <Button Content="Cancel" HorizontalAlignment="Left" Margin="526,315,0,0" VerticalAlignment="Top" Width="75" IsCancel="True" Click="ButtonCancel_Click"/>
+
+    </Grid>
+</Window>

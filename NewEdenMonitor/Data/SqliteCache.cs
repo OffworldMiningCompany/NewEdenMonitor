@@ -7,14 +7,47 @@ namespace NewEdenMonitor.Data
 {
     class SqliteCache : IEveLibCache
     {
+        private static volatile SqliteCache _instance;
+        private static readonly object SyncRoot = new Object();
+
+        public static SqliteCache Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (SyncRoot)
+                    {
+                        if (_instance == null)
+                            _instance = new SqliteCache();
+                    }
+                }
+
+                return _instance;
+            }
+        }
+
         public async Task StoreAsync(Uri uri, DateTime cacheTime, string data)
         {
-            await StoreDataAsync(uri, cacheTime, data);
+            using (var db = new EveContext())
+            {
+                await db.ApiCacheHandler.SetAsync(new ApiCache
+                    {
+                        Uri = uri.ToString(),
+                        CacheTime = cacheTime,
+                        Data = data
+                    });
+            }
         }
 
         public async Task<string> LoadAsync(Uri uri)
         {
-            ApiCache apiCache = await LoadDataAsync(uri);
+            ApiCache apiCache;
+
+            using (var db = new EveContext())
+            {
+                apiCache = await db.ApiCacheHandler.GetAsync(uri);
+            }
 
             if (apiCache != null && DateTime.UtcNow < apiCache.CacheTime)
             {
@@ -39,38 +72,6 @@ namespace NewEdenMonitor.Data
 
             value = DateTime.MinValue;
             return false;
-        }
-
-        private async Task StoreDataAsync(Uri uri, DateTime cacheTime, string data)
-        {
-            using (var db = new EveContext())
-            {
-                var obj = db.ApiCacheHandler.Get(uri);
-
-                if (obj == null)
-                {
-                    await
-                        db.ApiCacheHandler.AddAsync(new ApiCache
-                            {
-                                Uri = uri.ToString(),
-                                CacheTime = cacheTime,
-                                Data = data
-                            });
-                }
-                else
-                {
-                    obj.CacheTime = cacheTime;
-                    obj.Data = data;
-                }
-            }
-        }
-
-        private async Task<ApiCache> LoadDataAsync(Uri uri)
-        {
-            using (var db = new EveContext())
-            {
-                return await db.ApiCacheHandler.GetAsync(uri);
-            }
         }
     }
 }

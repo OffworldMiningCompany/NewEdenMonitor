@@ -1,41 +1,90 @@
 ﻿using eZet.EveLib.EveXmlModule;
+using eZet.EveLib.EveXmlModule.Models.Misc;
+using NewEdenMonitor.Annotations;
+using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Timers;
 
 namespace NewEdenMonitor.Data
 {
-    public class ServerStatusUpdater
+    public class ServerStatusUpdater : INotifyPropertyChanged
     {
-        private Timer _timer;
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        public ServerStatusUpdater()
-        {
-            Task.Factory.StartNew(UpdateTask);
-        }
+        private static volatile ServerStatusUpdater _instance;
+        private static readonly object SyncRoot = new Object();
 
-        public void UpdateTask()
+        private readonly Timer _timer;
+        private ServerStatus _serverStatus;
+
+        private ServerStatusUpdater()
         {
             _timer = new Timer();
-            _timer.Interval = 1*60*1000;
+            _timer.AutoReset = true;
             _timer.Elapsed += Tick;
-            _timer.Enabled = true;
 
-            UpdateServerStatus();
+            Task.Factory.StartNew(UpdateServerStatus);
         }
 
-        public static void Tick(object sender, ElapsedEventArgs args)
+        public static ServerStatusUpdater Instance
         {
-            UpdateServerStatus();
-        }
-
-        public static void UpdateServerStatus()
-        {
-            var serverStatus = EveXml.Eve.GetServerStatusAsync();
-
-            lock (EveXmlData.Instance.ServerStatus)
+            get
             {
-                EveXmlData.Instance.ServerStatus = serverStatus.Result.Result;
+                if (_instance == null)
+                {
+                    lock (SyncRoot)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new ServerStatusUpdater();
+                        }
+                    }
+                }
+
+                return _instance;
             }
+        }
+
+        public ServerStatus ServerStatus
+        {
+            get { return _serverStatus; }
+            set
+            {
+                _serverStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [NotifyPropertyChangedInvocator]
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void Tick(object sender, ElapsedEventArgs args)
+        {
+            UpdateServerStatus();
+        }
+
+        private void UpdateServerStatus()
+        {
+            var serverStatus = EveXml.Eve.GetServerStatus();
+
+            if (serverStatus.CachedUntil > DateTime.UtcNow)
+            {
+                _timer.Interval = (serverStatus.CachedUntil - DateTime.UtcNow).TotalMilliseconds + 30000;
+            }
+            else
+            {
+                _timer.Interval = 1*60*1000;
+            }
+
+            _timer.Start();
+
+            ServerStatus = serverStatus.Result;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace NewEdenMonitor.UI
         public ServerStatusWidget()
         {
             InitializeComponent();
-            this.DataContext = Data.EveXmlData.Instance;
+            this.DataContext = Data.ServerStatusUpdater.Instance;
         }
     }
 }

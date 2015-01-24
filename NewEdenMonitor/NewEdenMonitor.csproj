@@ -68,9 +68,29 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters.cs" />
-    <Compile Include="Data\EveXmlData.cs" />
+    <Compile Include="Data\CharacterInfoUpdater.cs" />
+    <Compile Include="Data\AccountStatusUpdater.cs" />
+    <Compile Include="Data\CharacterSheetUpdater.cs" />
     <Compile Include="Exceptions.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Model\Settings.cs" />
+    <Compile Include="MouseDoubleClick.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="UI\AddApiKeyWindow.xaml.cs">
+      <DependentUpon>AddApiKeyWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\CharacterCorporationWidget.xaml.cs">
+      <DependentUpon>CharacterCorporationWidget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\CharacterFactionWidget.xaml.cs">
+      <DependentUpon>CharacterFactionWidget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\CharacterHeaderWidget.xaml.cs">
+      <DependentUpon>CharacterHeaderWidget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\CharacterWidget.xaml.cs">
+      <DependentUpon>CharacterWidget.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\TotalKillsWidget.xaml.cs">
       <DependentUpon>TotalKillsWidget.xaml</DependentUpon>
     </Compile>
@@ -81,6 +101,26 @@
       <DependentUpon>ServerStatusWidget.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\Resource.cs" />
+    <Page Include="UI\AddApiKeyWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\CharacterCorporationWidget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\CharacterFactionWidget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\CharacterHeaderWidget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\CharacterWidget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\TotalKillsWidget.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -143,10 +183,18 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\bg1.png" />
-    <Resource Include="Resources\bg2.png" />
-    <Resource Include="Resources\bg3.png" />
-    <Resource Include="Resources\bg4.png" />
+    <None Include="Images\bg1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Images\bg2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Images\bg3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Images\bg4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Data.SQLite;
 using System.Threading.Tasks;
 
 namespace NewEdenMonitor.Model
@@ -13,18 +14,18 @@ namespace NewEdenMonitor.Model
 
     internal class ApiCacheHandler
     {
-        private readonly EveContext _parent;
+        private readonly EveContext _db;
 
-        internal ApiCacheHandler(EveContext parent)
+        internal ApiCacheHandler(EveContext db)
         {
-            _parent = parent;
+            _db = db;
         }
 
         internal ApiCache Get(Uri uri)
         {
             ApiCache apiCache = null;
 
-            using (var command = _parent.Connection.CreateCommand())
+            using (var command = _db.Connection.CreateCommand())
             {
                 command.CommandText = "SELECT uri, cache_time, data FROM api_cache WHERE uri = @uri;";
                 var param = command.Parameters.Add("uri", DbType.String);
@@ -34,11 +35,7 @@ namespace NewEdenMonitor.Model
                 {
                     while (reader.Read())
                     {
-                        apiCache = new ApiCache();
-
-                        apiCache.Uri = reader["uri"].ToString();
-                        apiCache.CacheTime = (DateTime) reader["cache_time"];
-                        apiCache.Data = reader["data"].ToString();
+                        apiCache = ReadObject(reader);
                     }
 
                     reader.Close();
@@ -53,11 +50,11 @@ namespace NewEdenMonitor.Model
             return await Task.Run(() => Get(uri));
         }
 
-        internal bool Add(ApiCache apiCache)
+        internal bool Set(ApiCache apiCache)
         {
-            using (var command = _parent.Connection.CreateCommand())
+            using (var command = _db.Connection.CreateCommand())
             {
-                command.CommandText = "INSERT INTO api_cache VALUES (@uri, @cache_time, @data);";
+                command.CommandText = "INSERT OR REPLACE INTO api_cache VALUES (@uri, @cache_time, @data);";
 
                 var param = command.Parameters.Add("uri", DbType.String);
                 param.Value = apiCache.Uri.ToString();
@@ -79,9 +76,20 @@ namespace NewEdenMonitor.Model
             return false;
         }
 
-        internal async Task<bool> AddAsync(ApiCache apiCache)
+        internal async Task<bool> SetAsync(ApiCache apiCache)
         {
-            return await Task.Run(() => Add(apiCache));
+            return await Task.Run(() => Set(apiCache));
+        }
+
+        private ApiCache ReadObject(SQLiteDataReader reader)
+        {
+            var apiCache = new ApiCache();
+
+            apiCache.Uri = reader["uri"].ToString();
+            apiCache.CacheTime = reader["cache_time"].ToDateTime();
+            apiCache.Data = reader["data"].ToString();
+
+            return apiCache;
         }
     }
 }
